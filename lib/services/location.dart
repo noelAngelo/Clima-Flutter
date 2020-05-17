@@ -9,14 +9,16 @@ class Location {
   Future<Position> getCurrentLocation() async {
 
     try {
-      position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.low);
-
-      latitude = position.latitude;
-      longitude = position.longitude;
+      position = await Geolocator()
+          .getCurrentPosition(desiredAccuracy: LocationAccuracy.low)
+          .timeout(const Duration(seconds: 5));
 
     } catch (e) {
-      print(e);
+      position = Position(latitude: 0, longitude: 0);
     }
+
+    latitude = position.latitude;
+    longitude = position.longitude;
 
     return position;
   }

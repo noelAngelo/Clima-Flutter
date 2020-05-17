@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:clima/services/location.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+
+
+import '../services/weather.dart';
+import 'location_screen.dart';
 
 class LoadingScreen extends StatefulWidget {
   @override
@@ -21,31 +23,25 @@ class _LoadingScreenState extends State<LoadingScreen> {
     super.deactivate();
   }
 
-  Future<Location> getLocation() async {
-    Location location = Location();
-    await location.getCurrentLocation();
+  void getLocation() async {
 
-    print('Latitude: ${location.latitude}');
-    print('Longitude: ${location.longitude}');
+    WeatherModel weather = WeatherModel();
+    var weatherForecast = await weather.getForecast();
 
-    getForecast(location.latitude, location.longitude);
-  }
-
-  Future<void> getForecast(double lat, double long) async {
-
-    String url = 'http://samples.openweathermap.org/data/2.5/weather?lat=35&lon=139&appid=439d4b804bc8187953eb36d2a8c26a02';
-
-    http.Response response = await http.get(url);
-    print(response.statusCode == 200 ? 'Response body: ${response.body}'
-        : 'Status code: ${response.statusCode}');
-
-    Map data = jsonDecode(response.body);
-
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return LocationScreen(forecast: weatherForecast);
+    }));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      body: Center(
+        child: SpinKitDoubleBounce(
+          color: Colors.white,
+          size: 50,
+        ),
+      ),
     );
   }
 }
